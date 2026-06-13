@@ -4,11 +4,13 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 from web import start_web
+from db import init_db
 
 load_dotenv()
 
 COGS = [
     "commands.pet_buff",
+    "commands.rally_leaders",
 ]
 
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.default())
@@ -22,6 +24,7 @@ async def on_ready():
 
 
 async def main():
+    init_db()
     await start_web(port=int(os.getenv("WEB_PORT", 8080)))
     async with bot:
         for cog in COGS:
