@@ -132,3 +132,4 @@ sudo systemctl status kronk
 
 1. Create `commands/your_command.py` with a `setup(bot)` function and a `commands.Cog` class
 2. Add `"commands.your_command"` to the `COGS` list in `main.py`
+# kronk
