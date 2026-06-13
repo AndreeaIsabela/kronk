@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — Kronk Bot</title>
+  <style>
+    body { font-family: sans-serif; max-width: 720px; margin: 60px auto; padding: 0 24px; line-height: 1.7; color: #1a1a1a; }
+    h1 { font-size: 2rem; margin-bottom: 4px; }
+    h2 { margin-top: 2rem; }
+    p, li { font-size: 1rem; }
+    .meta { color: #666; font-size: 0.9rem; margin-bottom: 2rem; }
+    code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { text-align: left; padding: 8px 12px; border: 1px solid #ddd; }
+    th { background: #f4f4f4; }
+  </style>
+</head>
+<body>
+
+<h1>Privacy Policy</h1>
+<p class="meta">Last updated: 2026-06-14</p>
+
+<p>This policy explains what data the Kronk Discord bot ("the Bot") collects, why, and how long it is kept.</p>
+
+<h2>Data We Collect</h2>
+
+<h3>Pet Buff Timers (<code>/pet-buff</code>)</h3>
+<p>When a pet buff timer is started, the following is stored per player:</p>
+<table>
+  <tr><th>Field</th><th>Purpose</th></tr>
+  <tr><td>Discord user ID</td><td>Identifies whose timer it is</td></tr>
+  <tr><td>Display name</td><td>Used in timer log recovery</td></tr>
+  <tr><td>Timer expiry timestamp</td><td>Schedules warning and deactivation messages</td></tr>
+  <tr><td>Discord channel ID</td><td>Determines where notifications are posted</td></tr>
+  <tr><td>Discord server (guild) ID</td><td>Isolates data per server</td></tr>
+</table>
+
+<h3>Rally Leaders (<code>/set-rally-leaders</code>)</h3>
+<p>When a rally leaders list is saved, the following is stored per server:</p>
+<table>
+  <tr><th>Field</th><th>Purpose</th></tr>
+  <tr><td>Discord user IDs</td><td>Identifies the rally leaders</td></tr>
+  <tr><td>Display names</td><td>Used for crash recovery logging</td></tr>
+  <tr><td>Discord server (guild) ID</td><td>Isolates the list per server</td></tr>
+</table>
+
+<h2>How Data Is Used</h2>
+<p>All collected data is used exclusively to operate the Bot's timer and notification features within your Discord server. It is never sold, shared with third parties, or used for any other purpose.</p>
+
+<h2>Where Data Is Stored</h2>
+<p>Data is stored in a MongoDB database hosted on MongoDB Atlas (cloud). It is not stored locally on any personal device.</p>
+
+<h2>Retention</h2>
+<ul>
+  <li><strong>Timer data</strong> is deleted automatically when the timer expires (within 2 hours). If the Bot is offline when a timer expires, the data is deleted on next startup.</li>
+  <li><strong>Rally leaders data</strong> is retained until overwritten by a new <code>/set-rally-leaders</code> command or until the Bot is removed from the server.</li>
+</ul>
+
+<h2>Your Rights</h2>
+<p>You may request deletion of your data at any time by contacting a server administrator. Timer data can also be cleared immediately using <code>/pet-buff-cancel</code>.</p>
+
+<h2>Contact</h2>
+<p>For privacy questions or data deletion requests, reach out to a server administrator.</p>
+
+</body>
+</html>

@@ -25,7 +25,7 @@ async def on_ready():
 
 async def main():
     init_db()
-    await start_web(port=int(os.getenv("WEB_PORT", 8080)))
+    await start_web(port=int(os.getenv("PORT") or os.getenv("WEB_PORT", 8080)))
     async with bot:
         for cog in COGS:
             bot.load_extension(cog)
