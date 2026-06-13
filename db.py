@@ -1,4 +1,5 @@
 import os
+import certifi
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
 _db: AsyncIOMotorDatabase | None = None
@@ -6,7 +7,7 @@ _db: AsyncIOMotorDatabase | None = None
 
 def init_db() -> None:
     global _db
-    client = AsyncIOMotorClient(os.getenv("MONGO_URI"))
+    client = AsyncIOMotorClient(os.getenv("MONGO_URI"), tlsCAFile=certifi.where())
     _db = client[os.getenv("MONGO_DB_NAME", "kronk")]
 
 
