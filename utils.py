@@ -1,16 +1,13 @@
-import json
-import os
-
-TIMERS_FILE = os.path.join(os.path.dirname(__file__), "timers.json")
+import re
+import discord
 
 
-def load_timers() -> dict:
-    if not os.path.exists(TIMERS_FILE):
-        return {}
-    with open(TIMERS_FILE, "r") as f:
-        return json.load(f)
-
-
-def save_timers(data: dict) -> None:
-    with open(TIMERS_FILE, "w") as f:
-        json.dump(data, f, indent=2)
+def parse_mentions(players_str: str, guild: discord.Guild) -> list[tuple[str, str]]:
+    """Extract (user_id, display_name) pairs from a string of @mentions."""
+    ids = re.findall(r"<@!?(\d+)>", players_str)
+    targets = []
+    for uid in ids:
+        member = guild.get_member(int(uid))
+        name = member.display_name if member else f"User {uid}"
+        targets.append((uid, name))
+    return targets
