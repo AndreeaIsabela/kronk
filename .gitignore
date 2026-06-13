@@ -1,4 +1,3 @@
 .env
-timers.json
 __pycache__/
 *.pyc
