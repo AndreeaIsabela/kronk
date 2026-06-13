@@ -10,6 +10,10 @@ from utils import load_timers, save_timers
 BUFF_DURATION = 2 * 3600   # 2 hours in seconds
 WARNING_BEFORE = 20 * 60   # warn 20 min before expiry
 
+#for testing
+# BUFF_DURATION = 2 * 60   # 2 minutes
+# WARNING_BEFORE = 20     # 20 seconds
+
 class PetBuff(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -110,6 +114,29 @@ class PetBuff(commands.Cog):
 
         await ctx.respond("✅ Pet buff timer started!", ephemeral=True)
         await channel.send(f"✅ **{username}** activated pet buff!")
+
+    @discord.slash_command(
+        name="pet-buff-cancel",
+        description="Cancel your active pet buff timer",
+    )
+    async def pet_buff_cancel(self, ctx: discord.ApplicationContext):
+        user_id = str(ctx.author.id)
+        username = ctx.author.display_name
+
+        timers = load_timers()
+        if user_id not in timers and user_id not in self.active_tasks:
+            await ctx.respond("You don't have an active pet buff timer.", ephemeral=True)
+            return
+
+        channel = self.bot.get_channel(timers[user_id]["channel_id"]) if user_id in timers else ctx.channel
+
+        self._cancel(user_id)
+        timers.pop(user_id, None)
+        save_timers(timers)
+
+        await ctx.respond("✅ Pet buff timer cancelled.", ephemeral=True)
+        if channel:
+            await channel.send(f"🚫 **{username}** cancelled their pet buff timer.")
 
 
 def setup(bot: commands.Bot):
