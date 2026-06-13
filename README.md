@@ -1,30 +1,53 @@
 # Kronk — Whiteout Survival Discord Bot
 
-Discord bot for SVS event coordination. Tracks pet buff timers and posts warnings to the channel where the command was used.
+Discord bot for SVS event coordination. Tracks pet buff timers and posts notifications to the channel where the command was used. Supports multiple servers independently.
 
 ---
 
 ## Commands
 
+### Pet Buff
+
 | Command | Description |
 |---|---|
-| `/pet-buff` | Starts your 2-hour pet buff timer. Posts a warning at 1h40m and a deactivation message at 2h. Running it again silently replaces the existing timer. |
+| `/pet-buff` | Starts your 2-hour pet buff 🐯💥 timer. |
+| `/pet-buff targets: @P1 @P2` | Starts timers for the mentioned players. |
+| `/pet-buff targets: rally-leaders` | Starts timers for everyone on the rally leaders list. Autocompletes. |
+| `/pet-buff-cancel` | Cancels your active timer. |
+| `/pet-buff-cancel targets: @P1 @P2` | Cancels timers for the mentioned players. |
+| `/pet-buff-cancel targets: rally-leaders` | Cancels timers for all rally leaders. Autocompletes. |
+
+**Timer behaviour:**
+- Each player can only have one active timer at a time — use `/pet-buff-cancel` before starting a new one
+- Activation and cancellation post a single public message listing all affected players as clickable mentions (no notification sent)
+- ⚠️ Warning fires 20 minutes before expiry with an `@everyone` ping
+- ❌ Deactivation message posts when the 2 hours are up
+- Warnings and expiry messages for players whose timers fire at the same time are batched into a single message
+
+### Rally Leaders
+
+| Command | Description |
+|---|---|
+| `/set-rally-leaders roster: @P1 @P2 …` | Saves the rally leaders list (replaces any existing one). |
+| `/rally-leaders` | Shows the current rally leaders list (only visible to you). |
 
 ---
 
 ## Setup
 
-### 1. Clone / copy the project
+### 1. Project structure
 
 ```
 bot/
   main.py
   web.py
+  db.py
   utils.py
   requirements.txt
   .env.example
   commands/
     pet_buff.py
+    rally_leaders.py
 ```
 
 ### 2. Install dependencies
@@ -41,17 +64,28 @@ cp .env.example .env
 
 Fill in `.env`:
 
-| Variable | Where to find it |
-|---|---|
-| `BOT_TOKEN` | Discord Developer Portal → your app → **Bot** tab → **Token** |
-
-Optional:
-
-| Variable | Default | Description |
+| Variable | Required | Where to find it |
 |---|---|---|
-| `WEB_PORT` | `8080` | Port for the Terms / Privacy web server |
+| `BOT_TOKEN` | ✅ | Discord Developer Portal → your app → **Bot** tab → **Token** |
+| `MONGO_URI` | ✅ | MongoDB Atlas connection string, or `mongodb://localhost:27017` for local |
+| `MONGO_DB_NAME` | — | Database name (default: `kronk`) |
+| `WEB_PORT` | — | Port for the Terms/Privacy web server (default: `8080`) |
 
-### 4. Invite the bot
+### 4. Set up MongoDB
+
+**Option A — Local (for testing):**
+Download and install [MongoDB Community Server](https://www.mongodb.com/try/download/community). It runs as a Windows service automatically. Use `MONGO_URI=mongodb://localhost:27017`.
+
+**Option B — MongoDB Atlas (for production, free tier):**
+1. Create a free account at [mongodb.com](https://www.mongodb.com)
+2. Create a free **M0** cluster
+3. Add a database user under **Database Access**
+4. Allow `0.0.0.0/0` under **Network Access**
+5. Click **Connect** → **Drivers** → copy the connection string into `MONGO_URI`
+
+The `kronk` database and its collections are created automatically on first use.
+
+### 5. Invite the bot
 
 In the Discord Developer Portal → **OAuth2 → URL Generator**:
 - Scopes: `bot`, `applications.commands`
@@ -59,36 +93,38 @@ In the Discord Developer Portal → **OAuth2 → URL Generator**:
 
 Open the generated URL and add the bot to your server.
 
-### 5. Run
+### 6. Run
 
 ```bash
 python main.py
 ```
 
-The bot registers slash commands globally on startup. Commands may take up to an hour to appear in Discord the first time — usually a few minutes.
+Slash commands register globally on startup. They may take up to an hour to appear in Discord the first time — usually a few minutes. Press **Ctrl+R** in Discord to refresh if they don't show immediately.
 
 ---
 
 ## Persistence & crash recovery
 
-Active timers are saved to `timers.json`. On restart the bot reads this file and:
-- Re-schedules timers that haven't expired yet
+All timers are stored in MongoDB, scoped by server ID. On restart the bot:
+- Re-schedules timers that haven't expired yet (with correct remaining time)
 - Immediately posts a deactivation message for any that expired while offline
+
+This works across all servers the bot is in simultaneously.
 
 ---
 
 ## Legal pages (required by Discord)
 
-The web server exposes two routes used in the Developer Portal:
+The web server exposes two routes to fill in the Developer Portal:
 
-| Route | URL |
+| Page | URL |
 |---|---|
 | Terms of Service | `http://your-server-ip:8080/terms` |
 | Privacy Policy | `http://your-server-ip:8080/privacy` |
 
 ---
 
-## Deployment (DigitalOcean)
+## Deployment (DigitalOcean Droplet)
 
 ```bash
 # Install Python 3.11+
@@ -126,10 +162,12 @@ sudo systemctl start kronk
 sudo systemctl status kronk
 ```
 
+**Recommended stack:** $4/month DigitalOcean Droplet + MongoDB Atlas free tier.
+
 ---
 
 ## Adding future commands
 
-1. Create `commands/your_command.py` with a `setup(bot)` function and a `commands.Cog` class
+1. Create `commands/your_command.py` with a `commands.Cog` class and a `setup(bot)` function
 2. Add `"commands.your_command"` to the `COGS` list in `main.py`
-# kronk
+3. Use `db.py` for any persistent data — scope all queries by `guild_id` for multi-server support

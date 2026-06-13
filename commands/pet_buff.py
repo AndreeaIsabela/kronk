@@ -11,8 +11,8 @@ BUFF_DURATION = 2 * 3600   # 2 hours in seconds
 WARNING_BEFORE = 20 * 60   # warn 20 min before expiry
 
 # for testing:
-BUFF_DURATION = 2 * 60
-WARNING_BEFORE = 20
+# BUFF_DURATION = 2 * 60
+# WARNING_BEFORE = 20
 
 NO_PING = discord.AllowedMentions(users=False, roles=False, everyone=False)
 EVERYONE_PING = discord.AllowedMentions(everyone=True, users=False, roles=False)
@@ -77,7 +77,7 @@ class PetBuff(commands.Cog):
         mentions = ", ".join(_mention(uid) for uid in user_ids)
         verb = "expire" if len(user_ids) > 1 else "expires"
         await channel.send(
-            f"⚠️ @everyone {mentions} pet buff 🐯💥 {verb} in 20 minutes!",
+            f"⚠️ @everyone {mentions} pet buff 🐯💥 {verb} in 20 minutes",
             allowed_mentions=EVERYONE_PING,
         )
 
