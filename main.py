@@ -11,6 +11,7 @@ load_dotenv()
 COGS = [
     "commands.pet_buff",
     "commands.rally_leaders",
+    "commands.set_event",
 ]
 
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.default())

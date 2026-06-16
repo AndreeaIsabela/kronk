@@ -7,7 +7,10 @@ _db: AsyncIOMotorDatabase | None = None
 
 def init_db() -> None:
     global _db
-    client = AsyncIOMotorClient(os.getenv("MONGO_URI"), tlsCAFile=certifi.where())
+    uri = os.getenv("MONGO_URI", "")
+    # Atlas URIs use the srv scheme and require TLS; local URIs do not.
+    kwargs = {"tlsCAFile": certifi.where()} if uri.startswith("mongodb+srv://") else {}
+    client = AsyncIOMotorClient(uri, **kwargs)
     _db = client[os.getenv("MONGO_DB_NAME", "kronk")]
 
 
@@ -54,3 +57,35 @@ async def save_rally_leaders(guild_id: str, leaders: list[dict]) -> None:
         {"$set": {"leaders": leaders}},
         upsert=True,
     )
+
+
+# --- events ---
+
+async def upsert_event(guild_id: str, event_name: str, data: dict) -> None:
+    """Insert or fully replace an event document."""
+    await get_db().events.replace_one(
+        {"guild_id": guild_id, "event_name": event_name},
+        {"guild_id": guild_id, "event_name": event_name, **data},
+        upsert=True,
+    )
+
+
+async def load_events(guild_id: str) -> list[dict]:
+    """Return all events for a guild (without MongoDB _id field)."""
+    result = []
+    async for doc in get_db().events.find({"guild_id": guild_id}, {"_id": 0}):
+        result.append(doc)
+    return result
+
+
+async def get_event(guild_id: str, event_name: str) -> dict | None:
+    return await get_db().events.find_one(
+        {"guild_id": guild_id, "event_name": event_name},
+        {"_id": 0},
+    )
+
+
+async def delete_event(guild_id: str, event_name: str) -> bool:
+    """Returns True if an event was found and deleted."""
+    result = await get_db().events.delete_one({"guild_id": guild_id, "event_name": event_name})
+    return result.deleted_count > 0
