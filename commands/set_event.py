@@ -290,6 +290,44 @@ class SetEvent(commands.Cog):
         )
 
     @discord.slash_command(
+        name="list-events",
+        description="List all scheduled events in this server.",
+    )
+    async def see_events(self, ctx: discord.ApplicationContext):
+        guild_id = str(ctx.guild.id)
+        events = await load_events(guild_id)
+
+        if not events:
+            await ctx.respond("ℹ️ No events scheduled in this server.", ephemeral=True)
+            return
+
+        embed = discord.Embed(
+            title=f"📅 Scheduled Events ({len(events)})",
+            colour=discord.Colour.blurple(),
+        )
+
+        for event in events:
+            next_dt = datetime.fromtimestamp(event["next_ts"], tz=timezone.utc)
+            next_str = next_dt.strftime("%Y-%m-%d %H:%M UTC")
+
+            channel = self.bot.get_channel(event["channel_id"])
+            channel_str = channel.mention if channel else f"<#{event['channel_id']}>"
+
+            player_ids = event.get("player_ids") or []
+            players_str = " ".join(f"<@{uid}>" for uid in player_ids) if player_ids else "@everyone"
+
+            message_str = event.get("custom_message") or "*(event name)*"
+
+            value = (
+                f"⏰ **{next_str}** · 🔁 {FREQ_LABELS[event['frequency']]}\n"
+                f"📢 {channel_str} · 💬 {message_str}\n"
+                f"👥 {players_str}"
+            )
+            embed.add_field(name=event["event_name"], value=value, inline=False)
+
+        await ctx.respond(embed=embed, ephemeral=True)
+
+    @discord.slash_command(
         name="cancel-event",
         description="Cancel a scheduled event by name.",
     )

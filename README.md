@@ -36,6 +36,7 @@ Discord bot for SVS event coordination. Tracks pet buff timers and posts notific
 | Command | Description |
 |---|---|
 | `/set-event event_name date_time frequency` | Schedules a notification in the current channel. Reusing an event name replaces it. |
+| `/list-events` | Lists all scheduled events in this server with their details (only visible to you). |
 | `/cancel-event event_name` | Cancels a scheduled event by name. |
 
 **Parameters for `/set-event`:**
