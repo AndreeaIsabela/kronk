@@ -31,6 +31,28 @@ Discord bot for SVS event coordination. Tracks pet buff timers and posts notific
 | `/set-rally-leaders roster: @P1 @P2 …` | Saves the rally leaders list (replaces any existing one). |
 | `/rally-leaders` | Shows the current rally leaders list (only visible to you). |
 
+### Events
+
+| Command | Description |
+|---|---|
+| `/set-event event_name date_time frequency` | Schedules a notification in the current channel. Reusing an event name replaces it. |
+| `/cancel-event event_name` | Cancels a scheduled event by name. |
+
+**Parameters for `/set-event`:**
+- `event_name` — unique per server; reusing it silently replaces the existing event
+- `date_time` — UTC, two formats accepted:
+  - `HH:MM` — today at that time, or tomorrow if it has already passed
+  - `YYYY-MM-DD HH:MM` — exact date (returns an error if in the past)
+- `frequency` — `once` / `daily` / `bi-daily` / `weekly` / `monthly`
+- `custom_message` _(optional)_ — text sent when the event fires; defaults to the event name
+- `players` _(optional)_ — @mention any number of players to ping; defaults to @everyone
+
+**Event behaviour:**
+- Confirmation after `/set-event` is ephemeral (only the setter sees it)
+- Notification when the event fires is public and visible to everyone in the channel
+- Recurring events survive bot restarts — missed occurrences are skipped and the next future one is scheduled automatically
+- Missed one-time events fire immediately on the next bot startup
+
 ---
 
 ## Setup
@@ -48,6 +70,10 @@ bot/
   commands/
     pet_buff.py
     rally_leaders.py
+    set_event.py
+  templates/
+    terms.html
+    privacy.html
 ```
 
 ### 2. Install dependencies

@@ -19,7 +19,7 @@
 <body>
 
 <h1>Privacy Policy</h1>
-<p class="meta">Last updated: 2026-06-14</p>
+<p class="meta">Last updated: 2026-06-16</p>
 
 <p>This policy explains what data the Kronk Discord bot ("the Bot") collects, why, and how long it is kept.</p>
 
@@ -45,6 +45,20 @@
   <tr><td>Discord server (guild) ID</td><td>Isolates the list per server</td></tr>
 </table>
 
+<h3>Scheduled Events (<code>/set-event</code>)</h3>
+<p>When an event is scheduled, the following is stored per event:</p>
+<table>
+  <tr><th>Field</th><th>Purpose</th></tr>
+  <tr><td>Event name</td><td>Identifies and uniquely keys the event within the server</td></tr>
+  <tr><td>Discord server (guild) ID</td><td>Isolates data per server</td></tr>
+  <tr><td>Discord channel ID</td><td>Determines where the notification is posted</td></tr>
+  <tr><td>Setter user ID</td><td>Records who created the event</td></tr>
+  <tr><td>Scheduled timestamp</td><td>Determines when to fire the notification</td></tr>
+  <tr><td>Frequency</td><td>Controls recurrence (once / daily / bi-daily / weekly / monthly)</td></tr>
+  <tr><td>Custom message</td><td>Text included in the notification (if provided)</td></tr>
+  <tr><td>Player Discord user IDs</td><td>Determines who is mentioned in the notification</td></tr>
+</table>
+
 <h2>How Data Is Used</h2>
 <p>All collected data is used exclusively to operate the Bot's timer and notification features within your Discord server. It is never sold, shared with third parties, or used for any other purpose.</p>
 
@@ -55,6 +69,7 @@
 <ul>
   <li><strong>Timer data</strong> is deleted automatically when the timer expires (within 2 hours). If the Bot is offline when a timer expires, the data is deleted on next startup.</li>
   <li><strong>Rally leaders data</strong> is retained until overwritten by a new <code>/set-rally-leaders</code> command or until the Bot is removed from the server.</li>
+  <li><strong>Event data</strong> for one-time events is deleted automatically after the notification fires. Recurring event data is retained until the event is cancelled with <code>/cancel-event</code> or the Bot is removed from the server.</li>
 </ul>
 
 <h2>Your Rights</h2>
