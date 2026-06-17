@@ -106,6 +106,16 @@ class SetEvent(commands.Cog):
         key = self._task_key(guild_id, event["event_name"])
         self.active_tasks[key] = asyncio.create_task(self._run_event(guild_id, event))
 
+    async def _get_channel(self, channel_id: int):
+        """Cache lookup with API fallback — get_channel misses channels not yet cached."""
+        channel = self.bot.get_channel(channel_id)
+        if channel is None:
+            try:
+                channel = await self.bot.fetch_channel(channel_id)
+            except (discord.NotFound, discord.Forbidden):
+                channel = None
+        return channel
+
     async def _fire_event(self, event: dict, channel: discord.TextChannel) -> None:
         """Send the event notification to the channel."""
         player_ids = event.get("player_ids") or []
@@ -132,15 +142,16 @@ class SetEvent(commands.Cog):
                 if sleep_for > 0:
                     await asyncio.sleep(sleep_for)
 
-                channel = self.bot.get_channel(event["channel_id"])
+                channel = await self._get_channel(event["channel_id"])
                 if channel:
                     await self._fire_event(event, channel)
+                    if event["frequency"] == "once":
+                        await delete_event(guild_id, event["event_name"])
+                        return
                 else:
-                    print(f"[set_event] Channel {event['channel_id']} not found for event '{event['event_name']}'")
-
-                if event["frequency"] == "once":
-                    await delete_event(guild_id, event["event_name"])
-                    return
+                    print(f"[set_event] Channel {event['channel_id']} not found for event '{event['event_name']}' — notification skipped, event kept.")
+                    if event["frequency"] == "once":
+                        return
 
                 # Compute next occurrence from the planned fire time (not wall clock)
                 # to avoid drift accumulating over many repetitions.
@@ -170,7 +181,7 @@ class SetEvent(commands.Cog):
             events = await load_events(guild_id)
 
             for event in events:
-                channel = self.bot.get_channel(event["channel_id"])
+                channel = await self._get_channel(event["channel_id"])
                 if channel is None:
                     print(f"[set_event] Channel for event '{event['event_name']}' in guild {guild_id} not found, skipping.")
                     continue
