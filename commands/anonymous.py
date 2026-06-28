@@ -15,25 +15,14 @@ class Anonymous(commands.Cog):
     )
     @discord.option("channel", description="Channel to post in", input_type=discord.TextChannel)
     @discord.option("message", description="The message to send anonymously")
-    @discord.option(
-        "repliable",
-        description="Show instructions for anonymous replies (default: True)",
-        required=False,
-        default=True,
-    )
     async def anonymous(
         self,
         ctx: discord.ApplicationContext,
         channel: discord.TextChannel,
         message: str,
-        repliable: bool = True,
     ):
-        content = message
-        if repliable:
-            content += f"\n\n*(To reply anonymously: use `/anonymous` in <#{channel.id}>)*"
-
         try:
-            await channel.send(content, allowed_mentions=ALLOW_MENTIONS)
+            await channel.send(message, allowed_mentions=ALLOW_MENTIONS)
         except discord.Forbidden:
             await ctx.respond(
                 f"❌ I don't have permission to send messages in <#{channel.id}>.",

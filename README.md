@@ -36,12 +36,10 @@ Discord bot for SVS event coordination. Tracks pet buff timers and posts notific
 | Command | Description |
 |---|---|
 | `/anonymous channel: #channel message: text` | Posts an anonymous message in the chosen channel. |
-| `/anonymous channel: #channel message: text repliable: false` | Posts without reply instructions. |
 
 **Parameters:**
 - `channel` — select a channel from the picker; the bot must have Send Messages permission there
 - `message` — the text to post (required)
-- `repliable` — optional, defaults to `true`; when `true`, the posted message includes a note telling others how to reply anonymously via `/anonymous`
 
 **Behaviour:**
 - The sender's identity is never revealed — the message is posted by the bot with no author info
