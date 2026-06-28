@@ -31,6 +31,26 @@ Discord bot for SVS event coordination. Tracks pet buff timers and posts notific
 | `/set-rally-leaders roster: @P1 @P2 …` | Saves the rally leaders list (replaces any existing one). |
 | `/rally-leaders` | Shows the current rally leaders list (only visible to you). |
 
+### Anonymous Messages
+
+| Command | Description |
+|---|---|
+| `/anonymous channel: #channel message: text` | Posts an anonymous message in the chosen channel. |
+| `/anonymous channel: #channel message: text repliable: false` | Posts without reply instructions. |
+
+**Parameters:**
+- `channel` — select a channel from the picker; the bot must have Send Messages permission there
+- `message` — the text to post (required)
+- `repliable` — optional, defaults to `true`; when `true`, the posted message includes a note telling others how to reply anonymously via `/anonymous`
+
+**Behaviour:**
+- The sender's identity is never revealed — the message is posted by the bot with no author info
+- The confirmation reply is ephemeral (only you see it)
+- No data is stored; the message is sent immediately and nothing is persisted
+- Discord's audit log may record that a slash command was used by a specific member — this is a Discord platform feature outside the bot's control
+
+---
+
 ### Events
 
 | Command | Description |

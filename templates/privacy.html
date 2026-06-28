@@ -59,6 +59,10 @@
   <tr><td>Player Discord user IDs</td><td>Determines who is mentioned in the notification</td></tr>
 </table>
 
+<h3>Anonymous Messages (<code>/anonymous</code>)</h3>
+<p>This command does not store any data. The message is delivered to the chosen channel immediately and nothing is written to the database. The sender's identity is never recorded or logged by the Bot.</p>
+<p>Note: Discord's own audit log records which server member used a slash command. This is a Discord platform feature and is outside the Bot's control.</p>
+
 <h2>How Data Is Used</h2>
 <p>All collected data is used exclusively to operate the Bot's timer, notification, and event scheduling features within your Discord server. The <code>/list-events</code> command reads and displays stored event data only to the server member who invoked it. No data is ever sold, shared with third parties, or used for any other purpose.</p>
 

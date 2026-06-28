@@ -12,6 +12,7 @@ COGS = [
     "commands.pet_buff",
     "commands.rally_leaders",
     "commands.set_event",
+    "commands.anonymous",
 ]
 
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.default())
